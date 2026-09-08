@@ -1,290 +1,138 @@
-[README.md](https://github.com/user-attachments/files/31962154/README.md)
-/**
-  ******************************************************************************
-  * @file    README.md
-  * @author  SZTU OSHA HFH
-  * @brief   介绍工程配置、文件结构、工程结构
-  *
-  ******************************************************************************
-  */
-  
-## 1 如何新建工程
-    利用模板工程文件夹 LCKFB_STM32F407VET6_V0.0
-    复制粘贴模板工程文件夹 
-    修改文件夹名字为新工程名
-    在文件夹目录下找到project，在project下修改CubeMx的工程名为新工程名，CubeMx工程名后缀为.ioc
-    删除project下的MDK-ARM文件夹
-    打开新的CubeMx工程
-    直接点生成工程代码，并打开工程
-    按下面的提示继续配置
+[Uploading README.md…]()
+================================================================
+                    桌面宠物狗（desktop_pet_dog）
+            基于 STM32F103C8T6 的四足机器人项目
+================================================================
 
-## 2 工程配置：
-    'Options for Target'控件中:
-        'Target'选项卡:
-            'ARM Compiler' 使用 version 6 编译器
-            勾选 '[Y] Use MicroLIB'
-            'Floating Point Hardware'选 'Single precision'
-        'C/C++(AC6)'选项卡:
-            'Preprocessor Symbols' 的Define中 添加 'ARM_MATH_LOOPUNROLL' 宏，宏之间英文逗号分隔
-            'Optimization' 优化选 '-Ofast'
-            'Include Paths' 添加 头文件路径
-            'Misc Controls'添加 -Wno-excess-initializers 屏蔽中文字符警告 initializer-string for char array is too long [-Wexcess-initializers]
-        'Debug'选项卡:
-            [Y] Use  'xxx Debugger' 'Settings'中
-                'Flash Download'
-                    勾选 '[Y] Reset and Run'
-                'Packs'
-                    取消勾选 '[N] Enable'
-    'Run-timer Environment'(RTE)控件中:
-        'CMSIS'中添加 DSP 源码
-            勾选[Y] 'DSP'和'CORE'
+一、项目简介
+--------------------------------------------------
+本项目是一个基于 STM32F103C8T6 的桌面级四足机器人（宠物狗）。
+它通过 4 路舵机驱动四条腿，实现站立、坐、趴下、前进、后退、转向、
+跳跃、打招呼、摇手等动作；同时用一块 OLED 屏幕显示小狗的各种表情，
+并支持蓝牙、语音（HMI 串口屏）两种方式远程控制，还可通过光敏电阻
+感知环境光线自动触发动作，是一款集运动、显示、交互于一体的
+嵌入式入门项目。
 
-## 3 文件结构：
-    app：      主要存放应用层代码
-    bsp：      存放和底层相关的支持包。
-    module：   主要存放各种软件模块，比如软件定时器，PID,FIFO,状态机等。
-    project:   存放工程文件。
-    README.md: 文档
-    
+二、硬件平台
+--------------------------------------------------
+主控芯片      : STM32F103C8T6
+开发工具      : STM32CubeMX + Keil MDK（AC6 编译器）
+HAL 库        : STM32F1xx HAL 驱动
 
-## 4 工程结构：
-    添加组：
-        |-app
-           |_debug_config.h
-        |-bsp
-        |-module
-        |_doc
-           |_README.md
-           
-## 5 头文件
-    #include "arm_math.h"
-            
-            
-## 6头文件模板 (xxx.h)
-/**
-  ******************************************************************************
-  * @file    xxx.h
-  * @author  SZTU OSHA 深圳技术大学开源硬件社 [YourName]
-  * @brief   [模块功能简要描述] Brief description of module function
-  * @version 1.0.0
-  * @date    [YYYY-MM-DD]
-  * @license GPL-3.0-only
-  ******************************************************************************
-  * @attention
-  * 
-  * 版权所有 (c) [YYYY] 深圳技术大学开源硬件社
-  * Copyright (c) [YYYY] SZTU OSHA
-  * 
-  * 根据GPL-3.0许可证授权，请确保遵守许可条款
-  * Licensed under GPL-3.0, please ensure compliance with the license terms
-  * 
-  ******************************************************************************
-  * @CubeMXConfiguration
-  * - 外设配置：[外设名称] 配置说明 | Peripheral Configuration: [Peripheral] description
-  * - 引脚分配：
-  *   - [引脚号]: [功能描述] | Pin Assignment:
-  *   - [Pin]: [Function description]
-  * - 时钟配置：[时钟源] @ [频率] | Clock Configuration: [Clock source] @ [Frequency]
-  * 
-  * 注意： | Note:
-  * 1. [重要配置注意事项] | [Important configuration notes]
-  ******************************************************************************
-  * @usage
-  * 1. 初始化: XXX_Init() | Initialization: XXX_Init()
-  * 2. 设置参数: XXX_SetParameter() | Set parameters: XXX_SetParameter()
-  * 3. 执行操作: XXX_Execute() | Execute operation: XXX_Execute()
-  * 
-  * 注意： | Note:
-  * 1. [使用时的关键注意事项] | [Key considerations when using]
-  ******************************************************************************
-  * @compatibility
-  * - STM32CubeMX v6.8.1+
-  * - HAL库 v1.18.0+ | HAL Library v1.18.0+
-  * 
-  * 依赖： | Dependencies:
-  * - stm32fxx_hal.h
-  * - yyy.h
-  ******************************************************************************
-  */
+主要外设/模块：
+ 1. 舵机       ：4 路 SG90 舵机（左前、右前、左后、右后四条腿）
+ 2. OLED 屏   ：128x64 显示小狗表情
+ 3. 蓝牙模块  ：USART3 通信，手机端控制
+ 4. 语音/HMI  ：USART2 通信，语音交互 / 串口屏
+ 5. 光敏电阻  ：ADC1 采样，感知环境光线
+ 6. WS2812    ：RGB 灯带（预留，用于灯光效果）
+ 7. 触摸按键  ：外部中断，触发互动动作
 
-/* 防止递归包含保护 | Prevent recursive inclusion */
-#ifndef __XXX_H__
-#define __XXX_H__
+三、引脚/外设分配（概要）
+--------------------------------------------------
+舵机（TIM1 PWM，周期 20ms / 50Hz）：
+  LEG1 左前  -> PA8  (TIM1_CH1)
+  LEG2 右前  -> PA9  (TIM1_CH2)
+  LEG3 左后  -> PA10 (TIM1_CH3)
+  LEG4 右后  -> PB13 (TIM1_CH4)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+OLED（IIC）：
+  SCL -> PB8（上拉、开漏）
+  SDA -> PB9（上拉、开漏）
 
-/* 包含头文件 | Includes ----------------------------------------------------------------*/
-#include "main.h"
-#include <stdbool.h>
+蓝牙（USART3）：PB10(RX) / PB11(TX)，115200bps
+语音 HMI（USART2）：DMA + 空闲中断接收，不定长指令
+光敏电阻（ADC1）：轮询采样
+WS2812 灯带：GPIO 输出（flow_LED 引脚）
+触摸按键：外部中断 EXTI
 
-/* 宏定义 | Macros -------------------------------------------------------------------*/
-#define XXX_MAX_VALUE     (1000)  // 模块最大值 | Module maximum value
-#define XXX_TIMEOUT       (0xFFFF)// 操作超时时间 | Operation timeout
+（以上引脚以实际接线和 CubeMX 配置为准）
 
-/* 状态码定义 | Status code definitions */
-#define XXX_OK            (0x00)  // 操作成功 | Operation successful
-#define XXX_ERROR         (0x01)  // 操作失败 | Operation failed
-#define XXX_BUSY          (0x02)  // 模块忙 | Module busy
+四、目录结构
+--------------------------------------------------
+app/        应用层代码（dog、motion、face、protocol 等）
+bsp/        底层驱动（舵机、蓝牙、HMI、WS2812、LED、串口等）
+module/     软件模块（OLED 显示、软件定时器）
+Src/        CubeMX 生成的 HAL 层初始化（main.c 等）
+Inc/        对应头文件
+Drivers/    CMSIS 与 HAL 标准库
+MDK-ARM/    Keil 工程文件
 
-/* 类型定义 | Types -----------------------------------------------------------------*/
-typedef enum {
-  XXX_MODE_LOW_POWER = 0, // 低功耗模式 | Low power mode
-  XXX_MODE_NORMAL,        // 普通模式 | Normal mode
-  XXX_MODE_HIGH_PERF      // 高性能模式 | High performance mode
-} XXX_OperatingMode_t;
+五、核心模块说明
+--------------------------------------------------
+1. motion（运动控制）
+   - 维护 4 个舵机的姿态（-90 ~ 90 度）
+   - 姿态类型：站立、坐、趴下、放松趴下
+   - 动作类型：前进、后退、左转、右转、向前跳、向后跳、
+               摇摆、打招呼、摇手、抬腿等
+   - 通过姿态帧 + 线性插值实现平滑过渡，可调速度（0-100）
 
-typedef struct {
-  uint32_t    param1;     // 参数1 | Parameter 1
-  uint16_t    param2;     // 参数2 | Parameter 2
-  bool        enableFeature; // 使能特性 | Enable feature
-} XXX_Config_t;
+2. face（表情显示）
+   - 封装 OLED 表情的初始化、切换、查询
+   - 表情类型：睡觉、瞪眼、开心、狂热、大笑、注视、打招呼等
 
-/* 函数声明 | Function prototypes ---------------------------------------------------*/
-uint8_t XXX_Init(XXX_HandleTypeDef *hxxx);  // 初始化模块 | Initialize module
-uint8_t XXX_SetMode(XXX_OperatingMode_t mode); // 设置模式 | Set mode
-void    XXX_ProcessData(uint8_t *input, uint8_t *output, uint16_t size); // 处理数据 | Process data
-bool    XXX_CheckStatus(void); // 检查状态 | Check status
+3. servo（舵机驱动）
+   - TIM1 输出 50Hz PWM，控制 SG90 舵机角度
+   - 角度与 CCR 对应：-90~90 度 对应 450~2250
 
-#ifdef __cplusplus
-}
-#endif
+4. BlueTooth（蓝牙）
+   - USART3 + DMA 循环接收 + 空闲中断
+   - 支持不定长数据包接收
 
-#endif /* __XXX_H__ */
+5. HMI（语音/串口屏）
+   - USART2 + DMA 接收，发送十六进制指令
+   - 接收指令后交给 dog.c 的 uart_to_51() 统一分发处理
 
-## 7 源文件模板 (xxx.c)
-/**
-  ******************************************************************************
-  * @file    xxx.c
-  * @author  SZTU OSHA 深圳技术大学开源硬件社 [YourName]
-  * @brief   [模块功能详细描述] Detailed description of module function
-  * @version 1.0.0
-  * @date    [YYYY-MM-DD]
-  * @license GPL-3.0-only
-  ******************************************************************************
-  * @attention
-  * 
-  * 版权所有 (c) [YYYY] 深圳技术大学开源硬件社
-  * Copyright (c) [YYYY] SZTU OSHA
-  * 
-  * 根据GPL-3.0许可证授权，请确保遵守许可条款
-  * Licensed under GPL-3.0, please ensure compliance with the license terms
-  * 
-  ******************************************************************************
-  * @implementation
-  * - 实现原理: [技术实现原理说明] | Implementation principle: [Description]
-  * - 算法描述: [使用的算法说明] | Algorithm description: [Description]
-  * 
-  * 注意： | Note:
-  * 1. [核心实现注意事项] | [Core implementation notes]
-  ******************************************************************************
-  */
+6. ws2812（RGB 灯带，预留）
+   - 提供单灯/多灯/全灯颜色设置与刷新接口
 
-/* 包含头文件 | Includes ----------------------------------------------------------------*/
-#include "xxx.h"
-#include "yyy.h"
+六、控制指令（HMI / 蓝牙收到后分发的动作）
+--------------------------------------------------
+0x29  躺平（放松趴下）
+0x30  蹲下（坐姿）
+0x31  起立（站立）
+0x32  趴下
+0x33  前进
+0x34  后退
+0x35  左转
+0x36  右转
+0x37  摇摆
+0x38  提高移动速度
+0x39  摇手
+0x41  向前跳
+0x42  向后跳
+0x43  打招呼
+0x44  前进五步
+0xAA  校正（servo_adjust）
+0xBB  校正完成（摇摆）
+0xCC  复位显示（坐下）
 
-/* 私有宏定义 | Private macros ---------------------------------------------------------------*/
-#define INTERNAL_BUFFER_SIZE  (64)  // 内部缓冲区大小 | Internal buffer size
+七、主程序流程（main.c）
+--------------------------------------------------
+1. HAL 初始化、系统时钟配置
+2. 初始化各外设（GPIO、DMA、TIM、USART、ADC、SPI 等）
+3. 初始化 Face（表情）、OLED 显示开机画面
+4. 初始化舵机、HMI、蓝牙、Myit（定时器中断）、运动控制器
+5. 主循环中周期性处理：
+   - 蓝牙接收处理
+   - HMI 接收处理
+   - 定时器任务（Myit_process）
+   - 光敏检测（adc_light_process，光线变化触发动作）
 
-/* 私有类型定义 | Private types -------------------------------------------------------------*/
-typedef struct {
-  XXX_Config_t config;   // 配置参数 | Configuration parameters
-  bool         initialized; // 初始化标志 | Initialization flag
-  uint32_t     lastTick; // 上次记录的时间戳 | Last recorded timestamp
-} XXX_Context_t;
+八、编译与烧录
+--------------------------------------------------
+1. 用 Keil MDK 打开 MDK-ARM 下的 .uvprojx 工程
+2. 编译器选择 AC6，勾选 Use MicroLIB
+3. 编译通过后生成 .hex，通过 ST-Link 等工具烧录
+4. 上电后 OLED 显示开机画面，即可通过蓝牙/语音控制
 
-/* 模块私有变量 | Private variables -------------------------------------------------------------*/
-static XXX_Context_t xxxContext = {
-  .config = {
-    .param1 = 0,
-    .param2 = XXX_MAX_VALUE,
-    .enableFeature = true
-  },
-  .initialized = false,
-  .lastTick = 0
-};
+九、注意事项
+--------------------------------------------------
+1. 舵机角度范围请保持在 -90 ~ 90 度，避免堵转损坏
+2. 运动为阻塞式插值，执行动作期间会占用主循环，需注意时序
+3. 蓝牙与 HMI 均使用"空闲中断 + DMA"，接收缓冲区大小需足够
+4. 实际引脚以 CubeMX 配置和接线为准
+5. 部分功能（WS2812 灯效、触摸逻辑等）为预留/注释状态，
+   可按需启用扩展
 
-/* 私有函数原型 | Private function prototypes ---------------------------------------------*/
-static void _XXX_ResetHardware(XXX_HandleTypeDef *hxxx); // 硬件复位 | Hardware reset
-static uint8_t _XXX_ValidateConfig(XXX_Config_t *config); // 配置验证 | Configuration validation
-
-/* 公有函数实现 | Public functions -------------------------------------------------------------*/
-
-/**
-  * @brief  初始化XXX模块 | Initialize XXX module
-  * @param  hxxx: XXX模块句柄指针 | Handle pointer of XXX module
-  * @retval 状态码 (XXX_OK/XXX_ERROR) | Status code (XXX_OK/XXX_ERROR)
-  */
-uint8_t XXX_Init(XXX_HandleTypeDef *hxxx)
-{
-  /* 参数检查 | Parameter check */
-  if(hxxx == NULL) {
-    return XXX_ERROR;
-  }
-  
-  /* 硬件复位 | Hardware reset */
-  _XXX_ResetHardware(hxxx);
-  
-  /* 配置验证 | Configuration validation */
-  if(_XXX_ValidateConfig(&xxxContext.config) != XXX_OK) {
-    return XXX_ERROR;
-  }
-  
-  /* 初始化完成标志 | Set initialization complete flag */
-  xxxContext.initialized = true;
-  xxxContext.lastTick = HAL_GetTick(); // 记录当前时间 | Record current time
-  
-  return XXX_OK;
-}
-
-/**
-  * @brief  设置工作模式 | Set operating mode
-  * @param  mode: 选择的工作模式 | Selected operating mode
-  * @retval 状态码 | Status code
-  */
-uint8_t XXX_SetMode(XXX_OperatingMode_t mode)
-{
-  /* 模式有效性检查 | Mode validity check */
-  if(mode > XXX_MODE_HIGH_PERF) {
-    return XXX_ERROR;
-  }
-  
-  /* [实际模式切换实现] | [Actual mode switching implementation] */
-  
-  return XXX_OK;
-}
-
-/* 私有函数实现 | Private functions -------------------------------------------------------------*/
-
-/**
-  * @brief  内部硬件复位函数 | Internal hardware reset function
-  * @param  hxxx: 模块句柄 | Module handle
-  * @retval None
-  */
-static void _XXX_ResetHardware(XXX_HandleTypeDef *hxxx)
-{
-  /* 复位硬件寄存器 | Reset hardware registers */
-  hxxx->Instance->CR = 0x00;
-  hxxx->Instance->CFGR = 0x00000000;
-  
-  /* 等待复位完成 | Wait for reset completion */
-  while((hxxx->Instance->SR & 0x01) != 0);
-}
-
-/**
-  * @brief  配置参数验证 | Configuration parameter validation
-  * @param  config: 配置结构体指针 | Pointer to configuration structure
-  * @retval 验证结果 | Validation result
-  */
-static uint8_t _XXX_ValidateConfig(XXX_Config_t *config)
-{
-  if(config->param2 > XXX_MAX_VALUE) {
-    return XXX_ERROR;
-  }
-  
-  /* [其他参数验证逻辑] | [Other parameter validation logic] */
-  
-  return XXX_OK;
-}
+================================================================
